@@ -1,5 +1,5 @@
 @extends('layouts.parent')
-@section('title','Create Products')
+@section('title', 'Create Products')
 
 @section('content')
 
@@ -37,8 +37,10 @@
                             @error('quantity')
                                 <div class="alert alert-danger">{{ $message }}</div>
                             @enderror
-                            <td><input type="button" class="btn btn-danger" id="delbut" value="Delete" onclick="delRow(this)" /></td>
-                            <td><input type="button" class="btn btn-success" id="addbut" value="Add More" onclick="addRow()" /></td>
+                            <td><input type="button" class="btn btn-danger" id="delbut" value="Delete"
+                                    onclick="delRow(this)" /></td>
+                            <td><input type="button" class="btn btn-success" id="addbut" value="Add More"
+                                    onclick="addRow()" /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -52,7 +54,6 @@
     {{-- query for ajax --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-
         function delRow(row) {
             let i = row.parentNode.parentNode.rowIndex;
             if (row.parentNode.parentNode.parentNode.rows.length != 1) {
@@ -64,7 +65,7 @@
             let tablePro = document.getElementById('Table');
             let newRow = tablePro.rows[1].cloneNode(true);
             let len = tablePro.rows.length;
-            let cellLen=newRow.cells.length;
+            let cellLen = newRow.cells.length;
             newRow.cells[0].innerHTML = len;
 
 
@@ -95,54 +96,52 @@
     </script>
 
     <script>
-        $( document ).ready(function() {
-            $(document).on('click', '#create-product',function(event){
+        $(document).ready(function() {
+            $(document).on('click', '#create-product', function(event) {
                 // var formData = new FormData(product-form);
                 event.preventDefault();
-                console.log($(".name").val());
+                let data = [];
+                $(".name").map(function(index, currentValue){
+                    data.push({
+                        'name':$('input[name="name['+(index+1)+']"]').val(),
+                        'price':$('input[name="price['+(index+1)+']"]').val(),
+                        'quantity':$('input[name="quantity['+(index+1)+']"]').val(),
+                    });
+                });
                 $.ajax({
 
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
-                //     // "Content-Type":"multipart/form-data; boundary=<calculated when request is sent>",
-                //     // "Connection":"keep-alive",
-                //     // "Accept":"application/json"
-                },
-                // type:'POST',
-                method:"POST",
-                url:'{{ Route('products.ajax.store') }}',
-                // async:false,
-                data:{
-                    // '_token':'{{ csrf_token() }}',
-                    // '_token': @json(csrf_token()),
-                    // "_token": $('#csrf-token')[0].content,
-                    for(let i=0;i<2;i++){
-                        'name['+i+']': $(".name").val(),
-                    }
-                    // 'price[]': $(".price").val(),
-                    // 'quantity[]': $(".quantity").val(),
-                    // 'dataTest':"test"
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
+                        //     // "Content-Type":"multipart/form-data; boundary=<calculated when request is sent>",
+                        //     // "Connection":"keep-alive",
+                            "Accept":"application/json"
+                    },
+                    // type:'POST',
+                    method: "POST",
+                    url: '{{ Route('products.ajax.store') }}',
+                    // async:false,
+                    data: {
+                        "data":data
+                    },
+                    success: function(data) {
+                        console.log("data");
+                        // console.log(data);
+                        if (data.status == true) {
+                            $('#success_msg').show();
+                        }
+                    },
+                    error: function(reject) {
+                        console.log(reject);
+                        // var response = $.parseJSON(reject.responseText);
 
-                },
-                success:function(data){
-                    console.log("data");
-                    // console.log(data);
-                    if (data.status == true) {
-                        $('#success_msg').show();
-                    }
-                },
-                error:function(reject){
-                    console.log("reject");
-                    // var response = $.parseJSON(reject.responseText);
+                        //         $.each(response.errors, function (key, val) {
+                        //             $("#" + key + "_error").text(val[0]);
+                        //         });
 
-                    //         $.each(response.errors, function (key, val) {
-                    //             $("#" + key + "_error").text(val[0]);
-                    //         });
-
-                },
-                // processData:false,
-                // contentType:false,
-                // cashe:false,
+                    },
+                    // processData:false,
+                    // contentType:false,
+                    // cashe:false,
 
 
                 });
