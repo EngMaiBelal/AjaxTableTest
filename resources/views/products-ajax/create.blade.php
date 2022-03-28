@@ -6,11 +6,19 @@
     <div class="col-12 text-center text-dark">
         <h1>Create Products</h1>
     </div>
+    <select id="#option_product">
+
+    </select>
+    {{-- last error only  , the name of field , exist all the time--}}
+    <div id="name_error" class=" form-text text-danger"> </div>
+    <div id="price_error" class=" form-text text-danger"> </div>
+    <div id="quantity_error" class=" form-text text-danger"> </div>
 
     <div class="col-12">
         <div id="divTable">
             <form action="" id="product-form">
                 {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}"> --}}
+
                 <table class="table" id="Table">
                     <thead>
                         <tr>
@@ -23,22 +31,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="data">
                             <td>1</td>
-                            <td><input class="form-control name" type="text" name="name[1]" id="name" /></td>
-                            @error('name')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            <td><input class="form-control price" type="number" name="price[1]" id="price" /></td>
-                            @error('price')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            <td><input class="form-control quantity" type="number" name="quantity[1]" id="quantity" /></td>
-                            @error('quantity')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
+
+                            <td><input class="form-control name" type="text" name="data[1]name" id="name" /></td>
+                            <td><input class="form-control price" type="number" name="data[1]price" id="price" /></td>
+                            <td><input class="form-control quantity" type="number" name="data[1]quantity" id="quantity" /></td>
+
                             <td><input type="button" class="btn btn-danger" id="delbut" value="Delete" onclick="delRow(this)" /></td>
                             <td><input type="button" class="btn btn-success" id="addbut" value="Add More" onclick="addRow()" /></td>
+
                         </tr>
                     </tbody>
                 </table>
@@ -49,7 +51,7 @@
 @endsection
 
 @section('js')
-    {{-- query for ajax --}}
+    {{-- jqueryLink for ajax --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
 
@@ -71,8 +73,11 @@
             var inp1 = newRow.cells[1].getElementsByTagName('input')[0];
             var inp2 = newRow.cells[2].getElementsByTagName('input')[0];
             var inp3 = newRow.cells[3].getElementsByTagName('input')[0];
+            // concate the name  not value
+            // for(let i=1; 0 <i< cellLen-3; i++){
+                // this["inp"+i] = newRow.cells[i].getElementsByTagName('input')[0];
+                // this["marker"+i] = "some stuff";
 
-            // for(let i=1; 0<i<cellLen-3; i++){
             //         (inp+i).name = ((inp+i).name.replace('[1]', '[' + len + ']'));
             //         (inp+i).id += len;
             //         (inp+i).value = '';
@@ -99,54 +104,85 @@
             $(document).on('click', '#create-product',function(event){
                 // var formData = new FormData(product-form);
                 event.preventDefault();
-                console.log($(".name").val());
+                let data = [];
+                $(".data").map(function(index, currentValue){
+                    data.push({
+                        'name':$('input[name="data['+(index+1)+']name"]').val(),
+                        'price':$('input[name="data['+(index+1)+']price"]').val(),
+                        'quantity':$('input[name="data['+(index+1)+']quantity"]').val(),
+                    });
+                });
+
+
+                console.log(typeof(data));
                 $.ajax({
 
-                headers:{
-                    'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
-                //     // "Content-Type":"multipart/form-data; boundary=<calculated when request is sent>",
-                //     // "Connection":"keep-alive",
-                //     // "Accept":"application/json"
-                },
-                // type:'POST',
-                method:"POST",
-                url:'{{ Route('products.ajax.store') }}',
-                // async:false,
-                data:{
-                    // '_token':'{{ csrf_token() }}',
-                    // '_token': @json(csrf_token()),
-                    // "_token": $('#csrf-token')[0].content,
-                    for(let i=0;i<2;i++){
-                        'name['+i+']': $(".name").val(),
-                    }
-                    // 'price[]': $(".price").val(),
-                    // 'quantity[]': $(".quantity").val(),
-                    // 'dataTest':"test"
+                    headers:{
+                        'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
+                        "Accept":"application/json"
+                        // "Content-Type":"multipart/form-data; boundary=<calculated when request is sent>",
+                        // "Connection":"keep-alive",
+                    },
+                    // type:'POST',
+                    method:"POST",
+                    url:'{{ Route('products.ajax.store') }}',
+                    // async:false,
+                    data:{
+                        "data":data
+                        // '_token':'{{ csrf_token() }}',
+                        // '_token': @json(csrf_token()),
+                        // "_token": $('#csrf-token')[0].content,
 
-                },
-                success:function(data){
-                    console.log("data");
-                    // console.log(data);
-                    if (data.status == true) {
-                        $('#success_msg').show();
-                    }
-                },
-                error:function(reject){
-                    console.log("reject");
-                    // var response = $.parseJSON(reject.responseText);
+                        // $('tagname[attrname="...."]').val()
+                        // 'name[]': $("input[class='name']").val(), //first row only
+                        // 'name[]': $(".name").val(),
+                        // 'price[]': $(".price").val(),
+                        // 'quantity': $(".quantity").val(),
+                        // 'dataTest':"test"
+                    },
+                    success:function(data){
+                        console.log(data.options);
+                        if (data.status == true) {
+                            // $("#option_product").html(data.options);
+                            // $('#option_product').append(data.options);
+                            var response =$.parseJSON(data);
+                            document.getElementById("option_product").innerHTML =response.options;
+                            // $('#success_msg').show();
+                        }
+                        // 32
+                    },
+                    error:function(reject){
+                        console.log("reject");
+                        //return message, errors
+                        var response = $.parseJSON(reject.responseText);
+                                $.each(response.errors, function (key, val) {
+                                    // console.log($("#" + key + "_error"));
 
-                    //         $.each(response.errors, function (key, val) {
-                    //             $("#" + key + "_error").text(val[0]);
-                    //         });
-
-                },
-                // processData:false,
-                // contentType:false,
-                // cashe:false,
+                                    var key_update= key.slice(7)
+                                    $("#" + key_update + "_error").text(val[0]);
 
 
+                                });
+                    },
+
+                    // https://stackoverflow.com/questions/28225885/laravel-ajax-output-json-error-messages
+                    //   success: function (json) {
+                    //     // clear inputs
+                    //         $('#name,#message,#email').val('');
+                    //         // append success message
+                    //         $( "#success" ).append(json.message );
+                    //     },
+                    //     error: function (jqXHR, json) {
+                    //         $( "#errors" ).append(json.errors );
+                    // }
+
+                    // processData:false,
+                    // contentType:false,
+                    // cashe:false,
+
+
+                    });
                 });
-            });
         });
     </script>
 @endsection
@@ -154,3 +190,9 @@
 {{-- ajax //@csrf//input invalid //array? --}}
 {{-- multidimensional --}}
 {{-- https://forum.jquery.com/topic/passing-php-multidimensional-array-to-ajax --}}
+
+
+
+
+
+
