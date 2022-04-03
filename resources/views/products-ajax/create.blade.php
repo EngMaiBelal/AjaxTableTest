@@ -6,7 +6,7 @@
     <div class="col-12 text-center text-dark">
         <h1>Create Products</h1>
     </div>
-    <select id="#option_product">
+    <select id="optionProduct">
 
     </select>
     {{-- last error only  , the name of field , exist all the time--}}
