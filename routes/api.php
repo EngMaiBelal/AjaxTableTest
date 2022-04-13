@@ -21,4 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['prefix'=>'/products/ajax', 'as' =>'products.ajax.'],function(){
     Route::post('/store-product', [ProductControllerWithAjax::class,'store'])->name('store');
+    Route::get('/get-select', [ProductControllerWithAjax::class,'getSelect'])->name('get-select');
+    Route::get('/get-select-input', [ProductControllerWithAjax::class,'getSelectInput'])->name('get-select-input');
 });

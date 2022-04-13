@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductInvoice;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ProductControllerWithAjax extends Controller
@@ -11,60 +13,46 @@ class ProductControllerWithAjax extends Controller
         return view('products-ajax.index');
     }
     public function create(){
-        return view('products-ajax.create');
+        $products = Product::all();
+        return view('products-ajax.create',compact('products'));
     }
-    // public function store(Request $request){
-        // $productValid= $request->validate([
-        //     'name.*'=>'required',
-        //     'price.*'=>'required',
-        //     'quantity.*'=>'required',
-        // ]);
-        // return response()->json($productValid);
-        // return response()->json($request->all());
-        // $product = Product::create($request->all());
 
-        // if($product){
-        //     return response()->json([
-        //         'status'=> true,
-        //         'msg'=> 'Save Success',
-        //     ]);
-        // }else{
-        //     return response()->json([
-        //         'status'=> false,
-        //         'msg'=> 'Save Failed',
-        //     ]);
-        // }
-    // }
 
     public function store(Request $request){
-
         $request->validate([
-            // 'data'=>'array:name,price,quantity', //return object
-            'data.*.name'=>'required',
+            'data.*.product'=>'required',
+            'data.*.supplier'=>'required',
             'data.*.price'=>'required',
             'data.*.quantity'=>'required',
         ]);
-        $products = Product::all();
-        // return response()->json($products);
-        // return response()->json($request->all());
-        // dd($products); internal server error 500
+        ProductInvoice::insert($request->data);
+        return response()->json(['success'=>true,'message'=>'Product Created Successfully'],201);
+    }
 
+    function getSelectInput(Request $request)
+    {
+        $request->validate([
+            'data.*.product'=>'required|exists:Product,id'
+        ]);
+        // $suppliers = Product::find(10)->suppliers; ???
+        // 500 (Internal Server Error)
+        // $suppliers = Product::findorfail(10)->suppliers;
+        // 404
+
+        $suppliers = Product::findorfail($request->product)->suppliers;
+        // $options = "<option value='' selected> Choose The Suppliers</option>";
         $options = "";
 
-        if($products){
-            foreach($products AS $product){
-                $options .= "<option value='$product->id'> $product->name </option>";
-            }
-            return response()->json(['options'=>$options, 'status'=>true ]);
 
-        }else{
-            return response()->json([
+        foreach($suppliers AS $supplier){
+            $options .= "<option value='{$supplier->id}'> {$supplier->name}</option>";
 
-                'options'=> $options,
-                'status'=> false
-            ]);
         }
-        // $product = Product::insert($request->all()['data']);
+        if($options == ""){
+            $options .= "<option value=''> No Supplier </option>";
+
+        }
+        return response()->json(['options'=>$options, 'success'=>true, 'suppliers'=>$suppliers  ]);
     }
 }
 
