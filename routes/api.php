@@ -24,3 +24,4 @@ Route::group(['prefix'=>'/products/ajax', 'as' =>'products.ajax.'],function(){
     Route::get('/get-select', [ProductControllerWithAjax::class,'getSelect'])->name('get-select');
     Route::get('/get-select-input', [ProductControllerWithAjax::class,'getSelectInput'])->name('get-select-input');
 });
+// /products/ajax/store-product

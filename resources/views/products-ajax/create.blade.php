@@ -91,7 +91,7 @@
             // }
         }
 
-
+        var count= 1;
         function addRow(forcedLength, childName) {
             //forcedLength to solve table when reset
             let newRow = tablePro.rows[1].cloneNode(true);
@@ -100,43 +100,44 @@
             let newLength = forcedLength ? 0 : len - 1 ;
 
             var inpDel =newRow.cells[4].getElementsByTagName('input')[0];
-            inpDel.id = (inpDel.id.replace('[1]', '[' + newLength + ']'));
+            inpDel.id = (inpDel.id.replace('[1]', '[' + count + ']'));
 
 
             var inp1 = newRow.cells[1].getElementsByTagName('select')[0];
-            let attrNumber = (Number(inp1.getAttribute('number'))+ newLength);
-            inp1.id = (inp1.id.replace('0', newLength ));
-            inp1.name = (inp1.name.replace('[0]', '[' + newLength + ']'));
+            let attrNumber = (Number(inp1.getAttribute('number'))+ count);
+            inp1.id = (inp1.id.replace('0', count ));
+            inp1.name = (inp1.name.replace('[0]', '[' + count + ']'));
             inp1.value = '';
             inp1.setAttribute("number", attrNumber);
 
             var inp2 = newRow.cells[2].getElementsByTagName('select')[0];
-            let attrData = (Number(inp2.getAttribute('data'))+ newLength);
-            inp2.id = (inp2.id.replace('0', newLength));
-            inp2.name = (inp2.name.replace('[0]', '[' + newLength + ']'));
+            let attrData = (Number(inp2.getAttribute('data'))+ count);
+            inp2.id = (inp2.id.replace('0', count));
+            inp2.name = (inp2.name.replace('[0]', '[' + count + ']'));
             inp2.value = '';
             inp2.setAttribute("data", attrData);
 
             var inp3 = newRow.cells[3].getElementsByTagName('input')[0];
             var inp4 = newRow.cells[4].getElementsByTagName('input')[0];
 
-            inp3.name = (inp3.name.replace('[0]', '[' + newLength + ']'));
+            inp3.name = (inp3.name.replace('[0]', '[' + count + ']'));
             inp3.value = '';
-            inp4.name = (inp4.name.replace('[0]', '[' + newLength + ']'));
+            inp4.name = (inp4.name.replace('[0]', '[' + count + ']'));
             inp4.value = '';
 
             var errorDiv1 = newRow.cells[1].getElementsByTagName('div')[0];
             var errorDiv2 = newRow.cells[2].getElementsByTagName('div')[0];
             var errorDiv3 = newRow.cells[3].getElementsByTagName('div')[0];
             var errorDiv4 = newRow.cells[4].getElementsByTagName('div')[0];
-            errorDiv1.id = (errorDiv1.id.replace('.0.', '.' + newLength + '.'));
+            errorDiv1.id = (errorDiv1.id.replace('.0.', '.' + count + '.'));
             errorDiv1.innerHTML = '';
-            errorDiv2.id = (errorDiv2.id.replace('.0.', '.' + newLength + '.'));
+            errorDiv2.id = (errorDiv2.id.replace('.0.', '.' + count + '.'));
             errorDiv2.innerHTML = '';
-            errorDiv3.id = (errorDiv3.id.replace('.0.', '.' + newLength + '.'));
+            errorDiv3.id = (errorDiv3.id.replace('.0.', '.' + count + '.'));
             errorDiv3.innerHTML = '';
-            errorDiv4.id = (errorDiv4.id.replace('.0.', '.' + newLength + '.'));
+            errorDiv4.id = (errorDiv4.id.replace('.0.', '.' + count + '.'));
             errorDiv4.innerHTML = '';
+            count++;
             return newRow;
         }
 

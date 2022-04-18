@@ -22,6 +22,9 @@
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
+            <a href="{{ route('/products/ajax/store-product') }}" class="ml-1 underline">
+                Ajax Table
+            </a>
             @if (Route::has('login'))
                 <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                     @auth
@@ -110,6 +113,9 @@
 
                             <a href="https://laravel.bigcartel.com" class="ml-1 underline">
                                 Shop
+                            </a>
+                            <a href="{{ route('/products/ajax/store-product') }}" class="ml-1 underline">
+                                Ajax Table
                             </a>
 
                             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="ml-4 -mt-px w-5 h-5 text-gray-400">
