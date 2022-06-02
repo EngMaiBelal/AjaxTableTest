@@ -1,17 +1,23 @@
 @extends('layouts.parent')
 @section('title', 'Create Products')
-
+@section('css')
+    <style>
+        .errorTxt{
+            border: 1px solid red;
+            min-height: 20px;
+        }
+    </style>
+@endsection
 @section('content')
+<div class="col-12 text-center text-dark">
+    <h1>Create Products</h1>
+</div>
 
-    <div class="col-12 text-center text-dark">
-        <h1>Create Products</h1>
-    </div>
+<div class="col-12">
+    <div id="divTable">
+            <form action="" id="product-form" name="form-reg">
 
-    <div class="col-12">
-        <div id="divTable">
-            <form action="" id="product-form">
                 <div id="general-error" class="text-danger font-weight-bold">
-
                 </div>
 
                 <table class="table" id="Table">
@@ -30,33 +36,35 @@
 
                         {{-- -------------------------------------------------------------- --}}
                         <tr class="data">
-                            <td>1</td>
+                            <td scope="row" class="th-btn-custom-remove">
+                                <span id="span-count">1</span>
+                            </td>
                             <td>
                                 {{-- <select class="form-select product m-2" id="all-product-immediately" name="data[0]product"> --}}
-                                    <select class="form-select product m-2 select-custom" number="0" id="product0" name="data[0]product" onchange="getSuppliers(this)">
+                                    <select class="form-select product m-2 select-custom" number="0" id="product0" name="data[0]product" onchange="getSuppliers(this)" required>
                                     <option selected>Choose Products</option>
                                     @foreach($products as $product)
                                         <option value="{{$product->id}}">{{$product->name}}</option>
                                     @endforeach
                                 </select>
-                                <div id="data.0.product" class="text-danger font-weight-bold">
+                                <div id="data.0.product" class="text-danger font-weight-bold error-product">
 
                                 </div>
                             </td>
                             <td>
-                                <select  class="form-select supplier m-2" id="supplier0" data="0" name="data[0]supplier">
+                                <select  class="form-select supplier m-2" id="supplier0" data="0" name="data[0]supplier" required>
                                 </select>
-                                <div id="data.0.supplier" class="text-danger font-weight-bold">
+                                <div id="data.0.supplier" class="text-danger font-weight-bold error-supplier">
                                 </div>
                             </td>
                             <td>
-                                <input class="form-control quantity" type="number" name="data[0]quantity" />
-                                <div id="data.0.quantity" class="text-danger font-weight-bold">
+                                <input class="form-control quantity" type="number" name="data[0]quantity" required/>
+                                <div id="data.0.quantity" class="text-danger font-weight-bold error-quantity">
                                 </div>
                             </td>
                             <td>
-                                <input class="form-control price" type="number" name="data[0]price" />
-                                <div id="data.0.price" class="text-danger font-weight-bold">
+                                <input class="form-control price" type="number" name="data[0]price" required/>
+                                <div id="data.0.price" class="text-danger font-weight-bold error-price">
                                 </div>
                             </td>
 
@@ -74,77 +82,106 @@
 @endsection
 
 @section('js')
+
     {{-- jqueryLink for ajax --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {{-- jqueryLink for validation --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+    <script src="{{asset('js/form-validation.js')}}"></script>
+
     <script type="text/javascript">
-
-
         var tablePro = document.getElementById('Table');
         var tbody = document.getElementById('tbody');
+        var firstRow = tablePro.rows[1];
+        var newTbody = {};
+        var count = 1;
+        var indexTable = 2;
+
 
         function delRow(row) {
             let i = row.parentNode.parentNode.rowIndex;
-            // if (row.parentNode.parentNode.parentNode.rows.length != 1) {
-                if(i != 1){
+            if (i != 1) {
                 document.getElementById('Table').deleteRow(i);
-                }
-            // }
+            }else{
+                firstRow.cells[1].getElementsByTagName("select")[0].value =
+                firstRow.cells[1].getElementsByTagName("select")[0].options[0].value; // option value = 0
+
+                firstRow.cells[2].getElementsByTagName("select")[0].value =
+                firstRow.cells[2].getElementsByTagName("select")[0].options[0].value;
+
+
+                firstRow.cells[3].getElementsByTagName("input")[0].value = '';
+                firstRow.cells[4].getElementsByTagName("input")[0].value = '';
+                // firstRow.cells[5].getElementsByTagName("input")[0].value = '';
+            }
+
         }
 
-        var count= 1;
         function addRow(forcedLength, childName) {
             //forcedLength to solve table when reset
-            let newRow = tablePro.rows[1].cloneNode(true);
+            let newRow = firstRow.cloneNode(true);
             let len = tablePro.rows.length;
-            newRow.cells[0].innerHTML = forcedLength ? 1 : len;
-            let newLength = forcedLength ? 0 : len - 1 ;
+            let newLength = forcedLength ? 0 : len - 1;
+            // document.getElementById("span-count").innerHTML = count+1;
+            newRow.cells[0].getElementsByTagName("span")[0].innerHTML = indexTable;
 
-            var inpDel =newRow.cells[4].getElementsByTagName('input')[0];
-            inpDel.id = (inpDel.id.replace('[1]', '[' + count + ']'));
+            let inp1 = newRow.cells[1].getElementsByTagName("select")[0];
+            let attrNumber = (Number(inp1.getAttribute("number")) + count);
+            console.log(count,indexTable, attrNumber)
+
+            let inp2 = newRow.cells[2].getElementsByTagName("select")[0];
+            let attrData = (Number(inp2.getAttribute("data")) + count);
+
+            let inp3 = newRow.cells[3].getElementsByTagName("input")[0];
+            let attrQuantity = (Number(inp3.getAttribute("quantity")) + count);
+
+            let inp4 = newRow.cells[4].getElementsByTagName("input")[0];
+            let attrPrice = (Number(inp4.getAttribute("price")) + count);
+
+            // let inp5 = newRow.cells[5].getElementsByTagName("input")[0];
+            // let attrTotal = (Number(inp5.getAttribute("total")) + count);
+
+            // let inpDel = newRow.cells[0].getElementsByTagName("button")[0];
+            // inpDel.id = (inpDel.id.replace('[1]', '[' + (indexTable) + ']'));
 
 
-            var inp1 = newRow.cells[1].getElementsByTagName('select')[0];
-            let attrNumber = (Number(inp1.getAttribute('number'))+ count);
-            inp1.id = (inp1.id.replace('0', count ));
-            inp1.name = (inp1.name.replace('[0]', '[' + count + ']'));
-            inp1.value = '';
-            inp1.setAttribute("number", attrNumber);
+            let errorDiv1 = newRow.cells[1].getElementsByTagName("div")[0];
+            let errorDiv2 = newRow.cells[2].getElementsByTagName("div")[0];
+            let errorDiv3 = newRow.cells[3].getElementsByTagName("div")[0];
+            let errorDiv4 = newRow.cells[4].getElementsByTagName("div")[0];
+            // let errorDiv5 = newRow.cells[5].getElementsByTagName("div")[0];
 
-            var inp2 = newRow.cells[2].getElementsByTagName('select')[0];
-            let attrData = (Number(inp2.getAttribute('data'))+ count);
-            inp2.id = (inp2.id.replace('0', count));
-            inp2.name = (inp2.name.replace('[0]', '[' + count + ']'));
-            inp2.value = '';
-            inp2.setAttribute("data", attrData);
+            setAttrTableCells(inp1, "number", attrNumber);
+            setAttrTableCells(inp2, "data", attrData);
+            setAttrTableCells(inp3, "quantity", attrQuantity);
+            setAttrTableCells(inp4, "price", attrPrice);
+            // setAttrTableCells(inp5, "total", attrTotal);
 
-            var inp3 = newRow.cells[3].getElementsByTagName('input')[0];
-            var inp4 = newRow.cells[4].getElementsByTagName('input')[0];
+            setAtrrTableMsg(errorDiv1);
+            setAtrrTableMsg(errorDiv2);
+            setAtrrTableMsg(errorDiv3);
+            setAtrrTableMsg(errorDiv4);
+            // setAtrrTableMsg(errorDiv5);
 
-            inp3.name = (inp3.name.replace('[0]', '[' + count + ']'));
-            inp3.value = '';
-            inp4.name = (inp4.name.replace('[0]', '[' + count + ']'));
-            inp4.value = '';
-
-            var errorDiv1 = newRow.cells[1].getElementsByTagName('div')[0];
-            var errorDiv2 = newRow.cells[2].getElementsByTagName('div')[0];
-            var errorDiv3 = newRow.cells[3].getElementsByTagName('div')[0];
-            var errorDiv4 = newRow.cells[4].getElementsByTagName('div')[0];
-            errorDiv1.id = (errorDiv1.id.replace('.0.', '.' + count + '.'));
-            errorDiv1.innerHTML = '';
-            errorDiv2.id = (errorDiv2.id.replace('.0.', '.' + count + '.'));
-            errorDiv2.innerHTML = '';
-            errorDiv3.id = (errorDiv3.id.replace('.0.', '.' + count + '.'));
-            errorDiv3.innerHTML = '';
-            errorDiv4.id = (errorDiv4.id.replace('.0.', '.' + count + '.'));
-            errorDiv4.innerHTML = '';
-            count++;
+            count+=1;
+            indexTable+=1;
             return newRow;
         }
 
-        var newTbody = {};
+        function setAttrTableCells(element, attrName, attrReplace) {
+            element.id = (element.id.replace('0', count));
+            element.name = (element.name.replace('[0]', '[' + count + ']'));
+            element.value = '';
+            element.setAttribute(attrName, attrReplace);
+        }
 
-        function appendRow(forcedLength,childName=newTbody) {
-            tbody.appendChild(addRow(forcedLength,tbody));
+        function setAtrrTableMsg(element) {
+            element.id = (element.id.replace('.0.', '.' + count + '.'));
+            element.innerHTML = '';
+        }
+
+        function appendRow(forcedLength, childName = newTbody) {
+            tbody.appendChild(addRow(forcedLength, tbody));
         }
 
         function resetTable() {
@@ -167,21 +204,19 @@
                     'quantity': $('input[name="data[' + (index) + ']quantity"]').val(),
                 });
             });
-
-
             $.ajax({
-
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content'),
                     "Accept": "application/json"
                 },
                 method: "POST",
-                url: '{{ Route('products.ajax.store') }}',
+                url: "{{ Route('products.ajax.store') }}",
                 data: {
                     "data": data
                 },
                 success: function(data) {
                     if (data.success == true) {
+                        console.log(data);
                         resetTable();
                     }
                 },
@@ -210,11 +245,10 @@
                     'product': $(`select[number=`+number+`]`).val(),
                 },
                 success: function(data) {
-                    if(data.suppliers){
-                // console.log(data.suppliers['pivot']);
-            }
+
 
                     if (data.success == true) {
+                        document.getElementById('general-error').innerHTML = "";
                         $(`select[data=`+number+`]`).html(data.options);
                     }
                 },

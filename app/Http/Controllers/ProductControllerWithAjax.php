@@ -19,14 +19,16 @@ class ProductControllerWithAjax extends Controller
 
 
     public function store(Request $request){
+
         $request->validate([
             'data.*.product'=>'required',
             'data.*.supplier'=>'required',
             'data.*.price'=>'required',
             'data.*.quantity'=>'required',
         ]);
+
         ProductInvoice::insert($request->data);
-        return response()->json(['success'=>true,'message'=>'Product Created Successfully'],201);
+        return response()->json(['success'=>true,'message'=>'Product Created Successfully','request'=>$request->data],201);
     }
 
     function getSelectInput(Request $request)
