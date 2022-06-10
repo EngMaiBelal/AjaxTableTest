@@ -160,7 +160,8 @@ return [
 
     'attributes' => [
         'data.*.product'=>'name',
-        'data.*.supplier'=>'price',
+        'data.*.supplier'=>'name-supplier',
+        'data.*.price'=>'price',
         'data.*.quantity'=>'quantity',
     ],
 

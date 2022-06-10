@@ -187,6 +187,7 @@ return [
         'Code'=>'كود',
         'SubCat_ID'=>'الفئة الفرعية ',
         'data.*.name'=>'الاسم',
+        'data.*.supplier'=>' الاسم صاحب المنتج',
         'data.*.price'=>'السعر',
         'data.*.quantity'=>'الكمية',
     ],
